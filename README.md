@@ -164,6 +164,69 @@ db.Courses.find({ teacher_id: ObjectId("67cd6da3fbaa1f6974d08e1b") });
 ```
 Получить список всех студентов определённой группы -> "Запрос_3.png"
 ```sh
-db.Courses.find({ teacher_id: ObjectId("67cd6da3fbaa1f6974d08e1b") });
+db.Students.find({ group: "ГР-102" });
 ```
 Получить список всех оценок определённого студента -> "Запрос_4.png"
+```sh
+db.Grades.find({ student_id: ObjectId("67cd6d90fbaa1f6974d08e16") });
+```
+Получить средний балл студента по всем курсам -> "Запрос_5.png"
+```sh
+db.Grades.aggregate([
+  { $match: { student_id: ObjectId("67cd6d90fbaa1f6974d08e16") } },
+  { $group: { _id: null, averageGrade: { $avg: "$grade" } } }
+]);
+```
+Получить список всех студентов, которые получили оценку выше 4 по определённому курсу -> "Запрос_6.png"
+```sh
+db.Grades.aggregate([
+  { $match: { course_id: ObjectId("67cd6db2fbaa1f6974d08e1d"), grade: { $gt: 4 } } },
+  { $lookup: { from: "Students", localField: "student_id", foreignField: "_id", as: "student" } },
+  { $unwind: "$student" },
+  { $project: { "student.name": 1, "student.surname": 1, grade: 1 } }
+]);
+```
+Получить список всех преподавателей, которые ведут курсы на определённом факультете -> "Запрос_7.png"
+```sh
+db.Courses.aggregate([
+  { $lookup: { from: "Teachers", localField: "teacher_id", foreignField: "_id", as: "teacher" } },
+  { $unwind: "$teacher" },
+  { $match: { "teacher.department": "Кафедра математики" } },
+  { $project: { "teacher.name": 1, "teacher.surname": 1, course_name: 1 } }
+]);
+```
+Получить список всех студентов, которые поступили в определённом году -> "Запрос_8.png"
+```sh
+db.Students.find({ year_of_admission: 2020 });
+```
+Получить список всех курсов, которые имеют больше 3 кредитов -> "Запрос_9.png"
+```sh
+db.Courses.find({ credits: { $gt: 3 } });
+```
+Получить средний балл по каждому курсу -> "Запрос_10.png"
+```sh
+db.Grades.aggregate([
+  {
+    $lookup: {
+      from: "Courses",
+      localField: "course_id",
+      foreignField: "_id",
+      as: "course"
+    }
+  },
+  { $unwind: "$course" },
+  {
+    $group: {
+      _id: "$course.course_name",
+      averageGrade: { $avg: "$grade" }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      course_name: "$_id",
+      averageGrade: 1
+    }
+  }
+]);
+```
