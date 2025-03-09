@@ -109,3 +109,18 @@ db.createCollection("Groups", {
 show collections;
 ```
 В файле "Коллекции.png" представлен результат
+## Индексы
+Для ускорения поиска студентов по фамилии и имени
+```sh
+db.Students.createIndex({ surname: 1, name: 1 });
+```
+Для ускорения поиска курсов по названию
+```sh
+db.Courses.createIndex({ course_name: 1 });
+```
+Для ускорения поиска оценок по студенту и курсу
+```sh
+db.Grades.createIndex({ student_id: 1, course_id: 1 });
+```
+Созданные индексы в файлах "Индексы_1.png", "Индексы_2.png"
+
