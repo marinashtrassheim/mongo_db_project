@@ -123,4 +123,5 @@ db.Courses.createIndex({ course_name: 1 });
 db.Grades.createIndex({ student_id: 1, course_id: 1 });
 ```
 Созданные индексы в файлах "Индексы_1.png", "Индексы_2.png"
+## Наполнение коллекций тестовыми данными
 
