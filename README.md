@@ -124,4 +124,48 @@ db.Grades.createIndex({ student_id: 1, course_id: 1 });
 ```
 Созданные индексы в файлах "Индексы_1.png", "Индексы_2.png"
 ## Наполнение коллекций тестовыми данными
+Вставка данных в коллекцию Students
+```sh
+db.Students.insertMany([
+  { name: "Иван", surname: "Иванов", group: "ГР-101", faculty: "Информатика", year_of_admission: 2020 },
+  { name: "Мария", surname: "Петрова", group: "ГР-102", faculty: "Математика", year_of_admission: 2021 },
+  { name: "Алексей", surname: "Сидоров", group: "ГР-101", faculty: "Информатика", year_of_admission: 2020 }
+]);
+```
+Вставка данных в коллекцию Teachers
+```sh
+db.Teachers.insertMany([
+  { name: "Анна", surname: "Смирнова", department: "Кафедра информатики", position: "Доцент" },
+  { name: "Дмитрий", surname: "Козлов", department: "Кафедра математики", position: "Профессор" },
+  { name: "Ольга", surname: "Васильева", department: "Кафедра физики", position: "Ассистент" }
+]);
+```
+Вставка данных в коллекцию Courses
+```sh
+db.Courses.insertMany([
+  { course_name: "Базы данных", teacher_id: db.Teachers.findOne({ surname: "Смирнова" })._id, credits: 4 },
+  { course_name: "Математический анализ", teacher_id: db.Teachers.findOne({ surname: "Козлов" })._id, credits: 5 },
+  { course_name: "Физика", teacher_id: db.Teachers.findOne({ surname: "Васильева" })._id, credits: 3 }
+]);
+```
+Вставка данных в коллекцию Groups
+```sh
+db.Groups.insertMany([
+  { group_name: "ГР-101", faculty: "Информатика", year_of_admission: 2020 },
+  { group_name: "ГР-102", faculty: "Математика", year_of_admission: 2021 }
+]);
+```
+Вставка данных в коллекцию Grades
+```sh
+const student1 = db.Students.findOne({ surname: "Иванов" })._id;
+const student2 = db.Students.findOne({ surname: "Петрова" })._id;
+const course1 = db.Courses.findOne({ course_name: "Базы данных" })._id;
+const course2 = db.Courses.findOne({ course_name: "Математический анализ" })._id;
 
+db.Grades.insertMany([
+  { student_id: student1, course_id: course1, grade: 5, date: new Date("2023-10-01") },
+  { student_id: student1, course_id: course2, grade: 4, date: new Date("2023-10-02") },
+  { student_id: student2, course_id: course1, grade: 3, date: new Date("2023-10-03") },
+  { student_id: student2, course_id: course2, grade: 5, date: new Date("2023-10-04") }
+]);
+```
